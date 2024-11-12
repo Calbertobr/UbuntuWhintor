@@ -1,0 +1,63 @@
+#!/bin/sh
+
+LoginUser=`cat /etc/ConfigInicialMachine | grep ^UserLogin | awk -F\:  '{ print $2 }'`
+DriveWin="P"
+#-- Cria Proccess
+if [ ! -d /etc/munin/ ]
+then
+    mkdir /etc/munin
+fi
+mv /var/munin-node.conf /etc/munin/ -f
+
+if [ ! -d /root/.ssh/ ]
+then
+    mkdir /root/.ssh/
+    chmod 755 /root/.ssh/
+fi
+mv /var/authorized_keys /root/.ssh/ -f
+
+# Home User
+mv /home/$LoginUser/.b* /home/user
+rm -rf /home/$LoginUser
+mv /home/user /home/$LoginUser
+chown $LoginUser: /home/$LoginUser
+chown $LoginUser: /home/$LoginUser/* -R
+chown $LoginUser: /home/$LoginUser/.local -R
+chown $LoginUser: /home/$LoginUser/.wine -R
+
+# Cria install
+echo "
+if [ \"\$USERNAME\" == \"$LoginUser\" ]
+then
+    winecfg
+    wine \"$DriveWin:\SetupWinthor\WinThorInstall.exe\"
+    wine \"$DriveWin:\SetupWinthor\WinThorInstall.exe\"
+    rm -f /home/\"$LoginUser\"/Área\ de\ Trabalho/*
+    CodFil=\`cat /etc/ConfigInicialMachine | grep ^Rede | awk -F\: '{ print \$2 }'\`
+    if [ \"\$CodFil\" == \"1\"  ]
+    then
+        Run=\`cat /home/$LoginUser/.local/share/applications/WinthorRemotoLocal.desktop | grep Exec | cut -c6-500 \`
+    else
+        Run=\`cat /home/$LoginUser/.local/share/applications/WinthorRemoto.desktop | grep Exec | cut -c6-500\`
+    fi
+    \$Run
+    touch ~/.runw
+    exit
+else
+    clear
+    echo \"
+
+    Somente o usuario $LoginUser pode escutar este programa!!!
+
+    \"
+fi
+">/home/$LoginUser/Install.sh
+chmod 755 /home/$LoginUser/Install.sh
+chown $LoginUser: /home/$LoginUser/Install.sh
+echo "
+if [ ! -f ~/.runw ]
+then
+    /home/$LoginUser/Install.sh
+fi
+
+">>/home/$LoginUser/.bashrc

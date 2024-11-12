@@ -1,0 +1,33 @@
+#!/bin/sh
+Dest(){
+    echo "\033[01;31\033[01;"$2"m"$1"\033[m "
+}
+LoginUser=`cat /etc/ConfigInicialMachine | grep ^UserLogin | awk -F\:  '{ print $2 }'`
+DriveWin='p'
+umount -f /home/$LoginUser/.wine/drive_$DriveWin
+# Remove user
+Check=`df -h | grep .wine | awk '{ print $6 }'`
+if [ "${#Check}" -eq 0 ]
+then
+    userdel $LoginUser -r >>/dev/null
+    Dest " Usuario $LoginUser removido." 31
+else
+    Dest " E nescessario demontar os volumes do Winthor." 31
+    exit
+fi
+# Remove mapemanto
+Check=`cat /etc/fstab | grep $LoginUser -c `
+if [ $Check -eq 1 ]
+then
+    if [ ! -d /.bk ]
+    then
+        mkdir /.bk
+    fi
+    cat /etc/fstab | grep $LoginUser -v | grep WINTHORNEW -v >/.bk/fstab
+    cat /.bk/fstab >/etc/fstab
+    rm  /.bk/fstab -f
+    Dest " Mapeamento $DriveWin: Removido." 31
+else
+    Dest " Mapeamento Inexistente." 31
+fi
+rm -rf /.bk

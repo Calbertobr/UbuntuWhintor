@@ -1,0 +1,12 @@
+Package: winthor-user
+Version: 10
+Architecture: amd64
+Maintainer: Winthor-Ubuntu <calbertobr@gmail.com>
+Installed-Size: 356732
+Pre-Depends: dpkg (>= 1.14.0)
+Depends: wine, wine32-preloader
+Provides: Erp
+Section: Erp Winthor
+Priority:
+Description: Instal Winthor on Linux
+

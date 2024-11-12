@@ -1,0 +1,13 @@
+#!/bin/sh
+
+Dest(){
+    echo "\033[34m Status: \033["$2"m"$1"\033[m \n"
+    sleep 2
+}
+## - Removing Process
+#systemctl -q stop Proccess.service
+#systemctl -q disable Proccess.service
+#systemctl -q daemon-reload
+rm -f /usr/lib/systemd/system/Proccess.service
+rm -rf /usr/local/share/proccess
+Dest "Proccess Service Remote. " 31

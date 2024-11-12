@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=WinThor Remoto
+Comment=Winthor Remoto
+Exec=rdesktop -a 16 -g 1240x700 -rdisk:Ubuntu=/home/UserTerminal/Documentos -u \\DOMINIO\\\\UserTerminal -p-PASSWORD- -n UserTerminal URL_TERMINAL_EXT
+Icon=remoto.png
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Erp;

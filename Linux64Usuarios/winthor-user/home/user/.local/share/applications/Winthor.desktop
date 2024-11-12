@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Sistema WinThor
+Comment=Erp Winthor
+Exec=env WINEPREFIX="/home/UserTerminal/.wine" wine ?:\\\\PCINF000.exe 
+Icon=winthor.png
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Erp;
+Path=/home/UserTerminal/.wine/dosdevices/?:/

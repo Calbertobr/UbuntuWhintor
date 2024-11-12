@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=WinThor Remoto Local
+Comment=Winthor Remoto Local
+Exec=rdesktop -a 16 -g 1240x700 -rdisk:Ubuntu=/home/UserTerminal/Documentos -u \\sstec.net.br\\\\UserTerminal -pHdfTK9832JHw -n UserTerminal 10.1.0.10
+Icon=remoto.png
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Erp;

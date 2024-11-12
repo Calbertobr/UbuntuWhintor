@@ -1,0 +1,163 @@
+#!/bin/sh
+
+Dest(){
+    echo "\033[34m Status: \033["$2"m"$1"\033[m \n"
+    sleep 2
+}
+LoginUser=`cat /etc/ConfigInicialMachine | grep ^UserLogin | awk -F\:  '{ print $2 }'`
+CodFil=`cat /etc/ConfigInicialMachine | grep ^Rede | awk -F\: '{ print $2 }'`
+DriveWin="p"
+##------------------------------------------------------------------------------------------------------------------------------------
+## Altera Grub biosdevname
+Check=` cat /etc/default/grub | grep net.ifnames | grep biosdevname -c `
+if [ $Check -eq 0 ]
+then
+    cp /etc/default/grub /.bk/
+    cat /etc/default/grub | grep GRUB_CMDLINE_LINUX= -v >/caco
+    echo -e "# Configuração Network Label Default
+GRUB_CMDLINE_LINUX=\" find_preseed=/preseed.cfg auto noprompt priority=critical locale=en_US net.ifnames=0 biosdevname=0 ipv6.disable=1 \"
+">>/caco
+    cat /caco >/etc/default/grub
+    rm -f /caco
+    grub-mkconfig -o /boot/grub/grub.cfg
+    Dest "Alterado BiosDeviceName on Grub." 32
+    rm -f ./.bk/grub
+else
+    Dest "Grub ja alterado." 31
+fi
+##------------------------------------------------------------------------------------------------------------------------------------
+## Disable ipv6 
+Check=`cat /etc/sysctl.conf | grep "#   D i s a b l e   i p v 6" -c `
+if [ $Check -eq 0 ]
+then
+    echo -e "#######################################
+#   D i s a b l e   i p v 6
+#######################################
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+">>/etc/sysctl.conf
+    Dest "IPV6 Disabilitado." 32
+else
+    Dest "IPV6 ja esta desabilitado." 31
+fi
+
+##------------------------------------------------------------------------------------------------------------------------------------
+## Remoção do Swap
+Check=`cat /etc/fstab | grep swap -c `
+if [ $Check -ne 0 ]
+then
+    swapoff -a
+    cat /etc/fstab | grep swap -v >/.bk/fstab
+    cat /.bk/fstab >/etc/fstab
+     rm /.bk/fstab -f
+     rm -f /sw*.img
+    Dest "Swap do SO Linux removido." 32
+else
+     rm -f /sw*.img >>/dev/null
+
+    Dest "Swap ja removido." 31
+fi
+##------------------------------------------------------------------------------------------------------------------------------------
+# Cria usuario user default
+UserExist=` cat /etc/passwd | grep ^$LoginUser -c `
+echo $UserExist
+if [ $UserExist -eq 0 ]
+then
+    useradd $LoginUser -m 
+    chsh -s /bin/bash $LoginUser
+    passwd -q $LoginUser <<eof
+BemVindo
+BemVindo
+eof
+
+    Dest "user $LoginUser Criado." 32 
+else
+    Dest "user $LoginUser ja existe." 31
+fi
+##------------------------------------------------------------------------------------------------------------------------------------
+## Mapemaneto P para Winthor Filial 1
+Check=`cat /etc/fstab | grep WINTHORNEW -c `
+if [ $Check -eq 0 ]
+then
+    echo "# # # # # # # # # # # # # # # # # # #  WINTHORNEW # # # # # # # # # # # # # #\n10.1.0.50:/DATA/Winthor				/home/$LoginUser/.wine/drive_$DriveWin				nfs rsize=16348,wsize=16348,hard,intr	0 0\n">>/etc/fstab
+    Dest "Mapeamento Winthor $DriveWin Criado." 32
+else
+    Dest "Mapeamento Existente." 31
+fi
+##------------------------------------------------------------------------------------------------------------------------------------
+## Cria processo de impressão de Etiquetass do correio.
+Check=`cat /home/$LoginUser/.bashrc | grep CorreioAGF -c `
+if [ $Check -eq 0 ]
+then
+    echo "# remover o # da linha abaixo em caso de emissão de etiquetas correio\n#/bin/EtiquetasCorreioAGF.sh &" >>/home/$LoginUser/.bashrc
+    chown $LoginUser: /home/$LoginUser/.bashrc
+    Dest "Etiquetas do correio Criado." 32
+else
+    Dest "Etiquetas do correio Existente." 31
+fi
+##------------------------------------------------------------------------------------------------------------------------------------
+## Cria process 
+
+
+
+if [ ! -d /usr/local/share/proccess ]
+then
+    mkdir /usr/local/share/proccess
+    echo "#!/bin/bash
+update(){
+    sleep 1800
+    apt update >>/dev/null
+    apt upgrade -y >>/dev/null
+    date>>/var/log/Process.log
+}
+update &
+">/usr/local/share/proccess/ProccessUpdate.sh
+
+    echo "[Unit]
+Description=Script de atualização
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/share/proccess/ProccessUpdate.sh
+
+[Install]
+WantedBy=multi-user.target
+">/usr/local/share/proccess/Proccess.service
+    ConfigProcess(){
+        chmod 644 /usr/local/share/proccess/Proccess.service
+        chmod 755 /usr/local/share/proccess/ProccessUpdate.sh
+        ln -s /usr/local/share/proccess/Proccess.service /usr/lib/systemd/system/Proccess.service
+        systemctl -q daemon-reload
+        systemctl -q enable Proccess.service
+    }
+    ConfigProcess >>/dev/null
+    Dest "Processo de atualização instalado." 32
+else
+    Dest "Processo de atualização ja instalado." 31
+fi
+
+##------------------------------------------------------------------------------------------------------------------------------------
+Check=`cat /var/spool/cron/crontabs/root | grep shutdown -c`
+if [ $Check -eq 0 ]
+then
+    echo "00	19	*	*	*	/sbin/shutdown -h now					# Encerramento de espediente">>/var/spool/cron/crontabs/root
+    Dest "Shutdown Process Instalado." 32
+else
+    Dest "Shutdown Process ja instalado." 31
+fi
+
+##------------------------------------------------------------------------------------------------------------------------------------
+Check=`cat /var/spool/cron/crontabs/root | grep AutoLoad -c`
+if [ $Check -eq 0 ]
+then
+    echo "10	*/2	*	*	*	/usr/bin/AutoLoad.sh					# Check Update">>/var/spool/cron/crontabs/root
+    Dest "AutoLoad Process Instalado." 32
+else
+    Dest "AutoLoad Process ja instalado." 31
+fi
+
+##------------------------------------------------------------------------------------------------------------------------------------
+## Remove pesquisaa de impressoras no cups
+sed 's/^BrowseLocalProtocols.*$/BrowseLocalProtocols\ none/' -i /etc/cups/cupsd.conf
