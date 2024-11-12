@@ -1,20 +1,25 @@
-Este projeto tem como principio ajudara quem queira instalar o Winthor da TOVUS no Ubuntu.
 
-Es processo e dividido em duas partes:
-  Um script que faz as perguntas sobre a empresa para configuraçã.
-  Um pacode criado para a plataforma de pacotes originarios do debian.
-
-Estrutura:
-
-Deve ser montado uma maquina facilitadora do processo com ubuntu 20 ou superior:
-  Não presisa ambiente grafico.
-  Precisa ter o Apache instalado para publicar os arquivos nescessarios.
+# | Descrição |
 
 
+  Este projeto tem como principio ajudara quem pretende instalar o Winthor da TOVUS
+  no Linux Ubuntu.
+
+  ### Este processo e dividido em duas partes:
+
+    Um script que faz as perguntas sobre a empresa para configuraçã.
+
+    Um pacode criado para a plataforma de pacotes originario do debian.
+
+  ### Estrutura:
+
+    Deve ser montado uma maquina para facilitar o processo com ubuntu 20 ou superior:
+     - Não nescessita de ambiente grafico.
+     - Precisa ter o Apache instalado.
+     - Nescessario ter ssh e chave criadas.
 
 
----------------------------------------------------------------------------------------------
-Chaves SSH:
+## Chaves SSH:
   Servidor:
     - Deve ser criada chave ssh no usuario root para conexão com o servidor de compartilhamento de arquivos.
     - Pois esta chave sera utilizadas sempre que for feita alguma alteração particular no processo.
@@ -23,43 +28,48 @@ Chaves SSH:
     - Na maquina que tem o serviço Apache deve ser criada chave ssh para esta se tornar a maquina de atualização do parque.
     - Esta chave permite que esta tenha acesso a todo o parque e com isso possa efetuar atualizações sem depender do colaborador que a utiliza.
 
-Arquivo:
-  - GeraCompactados.sh
-  - Local: Linux64Usuarios
-    Ação:
-      Deve ser alterada a variavel "IP_SITE" com endereço do Servidor web que disponibiliza os arquivos para instalação.
+## Arquivo:
+  ### GeraCompactados.sh
 
-  - authorized_keys
-  - Local: Linux64Usuarios/winthor-user/var/
+    Local: Linux64Usuarios
+    Ação:
+      - Deve ser alterada a variavel "IP_SITE" com endereço do Servidor web que disponibiliza os arquivos para instalação.
+
+  ### authorized_keys
+    Local: Linux64Usuarios/winthor-user/var/
     Ação:
       Incluir neste arquivo a chave criada no servidor web para incluir como liberados nas estações dos colaboradores.
 
-  - Install.sh
-  - Local: Linux64Usuarios/winthor-user/home/user/
+  ### Install.sh
+    Local: Linux64Usuarios/winthor-user/home/user/
     Ação:
       Alterar a letra do drive de acordo com a instalação do Winthor.
 
-  - tnsnames.ora
-  - Local: Linux64Usuarios/winthor-user/home/user/.wine/drive_?/InstantClient/
+  ### tnsnames.ora
+    Local: Linux64Usuarios/winthor-user/home/user/.wine/drive_?/InstantClient/
     Ação:
       Alterar os campos
         IP_SERVER = Ip do servidor do banco oracle
         PORT_SERVER = Porta de conexão do banco oracle
         SERVICE_NAME_SERVER = Service name do banco.
 
-  - Diretorio drive_?
-  - Local: Linux64Usuarios/winthor-user/home/user/.wine/dosdevices/
+## Diretorios
+
+  ### drive_?
+    Local: Linux64Usuarios/winthor-user/home/user/.wine/dosdevices/
     Ação:
       Criar o alias referente o drive criado apontando para a o diretorio nomeado drive_?.
+      Criar tambem o drive z: Apontando para a raiz "/"
 
-  - Launcher Aplicação
-  - Local: Linux64Usuarios/winthor-user/home/user/.local/share/applications
+## Launcher
+  ### Aplicação local
+    Local: Linux64Usuarios/winthor-user/home/user/.local/share/applications
     Arquivos:  Arquivos Winthor.desktop
     Ação:
       Alterar nestes arquivos os endereços do mapeamento colocados em ? para letra de mapeamento.
 
-  - Launcher Aplicação
-  - Local: Linux64Usuarios/winthor-user/home/user/.local/share/applications
+  ### Launcher Aplicação Remota
+    Local: Linux64Usuarios/winthor-user/home/user/.local/share/applications
     Arquivos:  Arquivos WinthorRemoto.desktop, WinthorRemotoLocal.desktop
     Ação: Alterar nestes arquivos 
       DOMINIO = Dominio do terminal server
