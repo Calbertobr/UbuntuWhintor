@@ -12,7 +12,7 @@
 #
 #	MOTIVO			Instalacao do linux nas estacoes de trabalho.
 #
-#	ESPECIFICACAO:		Uso Somente para SunSpecial Caracteristicas Internas.
+#	ESPECIFICACAO:		Uso Somente Caracteristicas Internas.
 #
 #	Release II	Adequação ubuntu 20
 #		Nesta versão os diretorios bin são alias.
@@ -203,10 +203,10 @@ ConfiguraRede(){
     done
 }
 
-## Install Packages SunSpecial
+## Install Packages
 ##----------------------------------------------------------------------------------------------------------------------------
-InstallSun() {
-    SunOk=`dpkg -l | grep sunspecialprograms`
+InstallNow() {
+    SunOk=`dpkg -l | grep winthor-user`
     if [ "$SunOk" == "" ]
     then
         dpkg --add-architecture i386
@@ -329,7 +329,7 @@ if [ "$2" != "" ]
 then
     CodFil=1
 else
-    for run in ConfigSources ConfiguraRede InstallSun PasswordRoot CleanPackages AlterFilesConf
+    for run in ConfigSources ConfiguraRede InstallNow PasswordRoot CleanPackages AlterFilesConf
     do
 #        Mensagem "Iniciando $run."
         $run 

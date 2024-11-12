@@ -37,10 +37,11 @@ Mensagem( ){
 Value=`ping 10.1.0.1 -c1 | grep ttl -c `
 if [ $Value -eq 1 ]
 then
-    Site=intranet.sstec.net.br
+    Site=Site_Interno
 else
-    Site=extranet.sstec.net.br
+    Site=Site_Externo
 fi
+
 wget -q $Site/Linux64/AutoLoad.sh >>/dev/null
 mv AutoLoad.sh /usr/bin/ -f
 chmod 755 /usr/bin/AutoLoad.sh
@@ -73,16 +74,16 @@ WantedBy=multi-user.target
 fi
 
 #--------------------------------------------------------------------------------------------------
-if [ -f /etc/VersionSunSpecial ]
+if [ -f /etc/winthor-user ]
 then
-    VersionsInstaladas=`cat /etc/VersionSunSpecial | sort | uniq | tr ['\n'] [' '] `
+    VersionsInstaladas=`cat /etc/winthor-user | sort | uniq | tr ['\n'] [' '] `
 fi
 
 if [ "$1" != "" ]
 then
-    if [ -f /etc/VersionSunSpecial ]
+    if [ -f /etc/winthor-user ]
     then
-        Vers=`cat /etc/VersionSunSpecial | grep $1 `
+        Vers=`cat /etc/winthor-user | grep $1 `
     fi
     if [ "$Vers" == "$1" ]
     then
@@ -120,7 +121,7 @@ then
             echo -e "C a r g a   d e   U p d a t e   $1   e s p e c i f i c o."
             Line
                 wget $Site/Linux64/Updates/$1.sh >>/dev/null
-                echo $1 >>/etc/VersionSunSpecial
+                echo $1 >>/etc/winthor-user
                 . ./$1.sh $Site $2
                 echo "
          C o m p l e t o   u p d a t e  $1 "
